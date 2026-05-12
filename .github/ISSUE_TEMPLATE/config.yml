@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Contribution guide
+    url: https://github.com/hitarthbuilds/confident-extract/blob/master/CONTRIBUTING.md
+    about: Read local setup, quality gates, benchmark guidance, and release checks before opening a change.

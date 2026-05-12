@@ -4,22 +4,35 @@ build-backend = "hatchling.build"
 
 [project]
 name = "confident-extract"
-version = "0.1.0"
-description = "Production-grade structured extraction framework with msgspec-first validation."
-readme = "README.md"
+version = "0.1.0a1"
+description = "Deterministic structured extraction from noisy JSON-like model output."
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "confident-extract contributors" }]
-keywords = ["extraction", "json", "llm", "msgspec", "orjson", "validation"]
+license-files = ["LICENSE"]
+authors = [{ name = "Hitarth Desai" }]
+maintainers = [{ name = "Hitarth Desai" }]
+keywords = [
+  "structured extraction",
+  "json repair",
+  "msgspec",
+  "orjson",
+  "schema validation",
+  "llm",
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Text Processing",
   "Typing :: Typed",
 ]
 dependencies = [
@@ -30,16 +43,25 @@ dependencies = [
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.25,<1.0"]
 dev = [
+  "build>=1.2,<2.0",
   "mypy>=1.10,<2.0",
   "pre-commit>=3.7,<5.0",
   "pytest>=8.0,<9.0",
   "pytest-asyncio>=0.23,<1.0",
   "pytest-benchmark>=5.0,<6.0",
   "ruff>=0.4,<1.0",
+  "twine>=5.1,<7.0",
 ]
 openai = ["openai>=1.0,<2.0"]
 ollama = ["ollama>=0.2,<1.0"]
 pydantic = ["pydantic>=2.0,<3.0"]
+
+[project.urls]
+Homepage = "https://github.com/hitarthbuilds/confident-extract"
+Repository = "https://github.com/hitarthbuilds/confident-extract"
+Issues = "https://github.com/hitarthbuilds/confident-extract/issues"
+Changelog = "https://github.com/hitarthbuilds/confident-extract/blob/master/CHANGELOG.md"
+CI = "https://github.com/hitarthbuilds/confident-extract/actions/workflows/ci.yml"
 
 [tool.hatch.build.targets.wheel]
 packages = ["confident_extract"]
