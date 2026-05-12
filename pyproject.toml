@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "confident-extract"
+version = "0.1.0"
+description = "Production-grade structured extraction framework with msgspec-first validation."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "confident-extract contributors" }]
+keywords = ["extraction", "json", "llm", "msgspec", "orjson", "validation"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Typing :: Typed",
+]
+dependencies = [
+  "msgspec>=0.18,<1.0",
+  "orjson>=3.9,<4.0",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.25,<1.0"]
+dev = [
+  "mypy>=1.10,<2.0",
+  "pre-commit>=3.7,<5.0",
+  "pytest>=8.0,<9.0",
+  "pytest-asyncio>=0.23,<1.0",
+  "pytest-benchmark>=5.0,<6.0",
+  "ruff>=0.4,<1.0",
+]
+openai = ["openai>=1.0,<2.0"]
+ollama = ["ollama>=0.2,<1.0"]
+pydantic = ["pydantic>=2.0,<3.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["confident_extract"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra --strict-config --strict-markers"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+xfail_strict = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+  "ANN",
+  "ASYNC",
+  "B",
+  "D",
+  "E",
+  "F",
+  "I",
+  "RUF",
+  "TC",
+  "UP",
+]
+ignore = [
+  "D203",
+  "D213",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["benchmarks", "confident_extract", "tests"]
+pretty = true
+show_error_codes = true
+warn_unreachable = true

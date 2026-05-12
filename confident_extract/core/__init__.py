@@ -1,0 +1,1 @@
+"""Core extraction pipeline package."""
