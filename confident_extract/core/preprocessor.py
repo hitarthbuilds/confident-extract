@@ -15,7 +15,7 @@ def strip_markdown_fences(text: str) -> str:
 
     Returns:
         The fenced payload when the entire input is wrapped in a plain or
-        `json`-tagged Markdown fence. Otherwise returns the input unchanged.
+        ``json``-tagged Markdown fence. Otherwise returns the input unchanged.
     """
     if _MARKDOWN_FENCE not in text:
         return text
@@ -96,6 +96,10 @@ def unwrap_escaped_json(text: str) -> str:
 def preprocess(text: str) -> str:
     """Applies the full preprocessing pipeline to raw model output.
 
+    Includes a fast path for bare JSON input that skips Markdown fence
+    stripping and escaped-JSON unwrapping, as those operations are only
+    relevant when the input is wrapped in a fence or a quoted string literal.
+
     Args:
         text: Raw model output that may contain Markdown fences, outer
             whitespace, or escaped JSON.
@@ -103,9 +107,22 @@ def preprocess(text: str) -> str:
     Returns:
         Cleaned text ready for the repair and validation stages.
     """
+    # Fast path: no fence marker and no CRLF → just strip whitespace.
+    # Escaped-JSON unwrapping is only needed when the text starts with '"'.
+    if _MARKDOWN_FENCE not in text and "\r" not in text:
+        stripped = text.strip()
+        if not stripped or stripped[0] != '"':
+            return stripped
+        # Could be escaped JSON — unwrap and re-strip if it changed.
+        unwrapped = unwrap_escaped_json(stripped)
+        if unwrapped is stripped:
+            return stripped
+        return unwrapped.strip() if unwrapped != stripped else stripped
+
+    # Full pipeline: fences, CRLF normalization, and optional escape unwrapping.
     normalized = normalize_whitespace(strip_markdown_fences(text))
     unwrapped = unwrap_escaped_json(normalized)
-    if unwrapped == normalized:
+    if unwrapped is normalized or unwrapped == normalized:
         return normalized
     return normalize_whitespace(unwrapped)
 

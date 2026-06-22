@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use confident-extract in your research or production system, please cite it as below."
+type: software
+title: "confident-extract"
+abstract: >
+  confident-extract is a Python library for deterministic structured extraction from noisy
+  LLM and OCR output. It repairs malformed JSON without additional LLM calls, validates
+  against msgspec Structs, Pydantic v2 BaseModel subclasses, and Python dataclasses, and
+  returns a confidence score reflecting the structural quality of the original input.
+authors:
+  - family-names: "Desai"
+    given-names: "Hitarth"
+    alias: "hitarthbuilds"
+repository-code: "https://github.com/hitarthbuilds/confident-extract"
+url: "https://pypi.org/project/confident-extract/"
+license: MIT
+version: "0.1.0"
+date-released: "2026-06-20"
+keywords:
+  - structured extraction
+  - LLM output parsing
+  - JSON repair
+  - schema validation
+  - msgspec
+  - pydantic
+  - orjson
+  - natural language processing
+  - information extraction
+  - machine learning

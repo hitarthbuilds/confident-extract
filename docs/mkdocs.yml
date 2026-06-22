@@ -1,0 +1,83 @@
+site_name: confident-extract
+site_description: "Deterministic structured extraction from noisy LLM and OCR output. Zero LLM round-trips. Works with msgspec, Pydantic, and dataclasses."
+site_url: https://hitarthbuilds.github.io/confident-extract/
+repo_url: https://github.com/hitarthbuilds/confident-extract
+repo_name: hitarthbuilds/confident-extract
+edit_uri: edit/master/docs/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: true
+            show_root_heading: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quickstart: getting-started/quickstart.md
+  - Guides:
+    - Schema Types: guides/schemas.md
+    - Repair Engine: guides/repair.md
+    - Confidence Scoring: guides/confidence.md
+    - Batch Extraction: guides/batch.md
+    - Async Usage: guides/async.md
+    - Routing & Fallback: guides/routing.md
+    - Custom Strategies: guides/custom-strategies.md
+  - Provider Adapters:
+    - Anthropic: providers/anthropic.md
+    - OpenAI: providers/openai.md
+  - API Reference:
+    - confident_extract: api/index.md
+    - extract: api/extract.md
+    - ExtractionResult: api/result.md
+    - ConfidenceScore: api/confidence.md
+    - Repair Engine: api/repair.md
+    - Routing: api/routing.md
+  - FAQ: faq.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/hitarthbuilds/confident-extract
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/confident-extract/

@@ -45,13 +45,18 @@ def test_package_root_import_exposes_expected_symbols() -> None:
     assert confident_extract.ExtractionResult is ExtractionResult
     assert confident_extract.MsgspecValidationError is MsgspecValidationError
     assert confident_extract.ValidationError is ValidationError
-    assert confident_extract.__all__ == [
+    assert set(confident_extract.__all__) >= {
         "ExtractionResult",
         "MsgspecValidationError",
         "ValidationError",
         "__version__",
         "extract",
-    ]
+        "extract_async",
+        "extract_list",
+        "extract_list_async",
+        "ConfidenceScore",
+        "PydanticValidationError",
+    }
 
 
 def test_extract_import_works_cleanly() -> None:

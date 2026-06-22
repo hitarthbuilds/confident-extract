@@ -4,25 +4,41 @@ build-backend = "hatchling.build"
 
 [project]
 name = "confident-extract"
-version = "0.1.0a1"
-description = "Deterministic structured extraction from noisy JSON-like model output."
+version = "0.1.0"
+description = "Deterministic structured extraction from noisy LLM and OCR output. Zero LLM round-trips. Works with msgspec, Pydantic v2, and dataclasses."
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.11"
 license = { text = "MIT" }
 license-files = ["LICENSE"]
-authors = [{ name = "Hitarth Desai" }]
-maintainers = [{ name = "Hitarth Desai" }]
+authors = [{ name = "Hitarth Desai", email = "hitarthdesai01@gmail.com" }]
+maintainers = [{ name = "Hitarth Desai", email = "hitarthdesai01@gmail.com" }]
 keywords = [
   "structured extraction",
+  "llm output parsing",
   "json repair",
-  "msgspec",
-  "orjson",
+  "json parsing",
   "schema validation",
+  "msgspec",
+  "pydantic",
+  "orjson",
   "llm",
+  "large language model",
+  "openai",
+  "anthropic",
+  "claude",
+  "chatgpt",
+  "ocr",
+  "information extraction",
+  "natural language processing",
+  "nlp",
+  "confidence score",
+  "async extraction",
+  "batch extraction",
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
@@ -33,7 +49,11 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Text Processing",
+  "Topic :: Text Processing :: General",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Information Analysis",
   "Typing :: Typed",
+  "Framework :: AsyncIO",
 ]
 dependencies = [
   "msgspec>=0.18,<1.0",
@@ -41,23 +61,30 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-anthropic = ["anthropic>=0.25,<1.0"]
+anthropic = ["anthropic>=0.25"]
+openai = ["openai>=1.0"]
+ollama = ["ollama>=0.2"]
+pydantic = ["pydantic>=2.0,<3.0"]
+docs = [
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.5",
+  "mkdocstrings[python]>=0.25",
+]
 dev = [
   "build>=1.2,<2.0",
   "mypy>=1.10,<2.0",
   "pre-commit>=3.7,<5.0",
+  "pydantic>=2.0,<3.0",
   "pytest>=8.0,<9.0",
   "pytest-asyncio>=0.23,<1.0",
   "pytest-benchmark>=5.0,<6.0",
   "ruff>=0.4,<1.0",
   "twine>=5.1,<7.0",
 ]
-openai = ["openai>=1.0,<2.0"]
-ollama = ["ollama>=0.2,<1.0"]
-pydantic = ["pydantic>=2.0,<3.0"]
 
 [project.urls]
-Homepage = "https://github.com/hitarthbuilds/confident-extract"
+Homepage = "https://hitarthbuilds.github.io/confident-extract/"
+Documentation = "https://hitarthbuilds.github.io/confident-extract/"
 Repository = "https://github.com/hitarthbuilds/confident-extract"
 Issues = "https://github.com/hitarthbuilds/confident-extract/issues"
 Changelog = "https://github.com/hitarthbuilds/confident-extract/blob/master/CHANGELOG.md"
@@ -100,6 +127,10 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN", "D"]
+"benchmarks/**" = ["ANN", "D"]
 
 [tool.mypy]
 python_version = "3.11"

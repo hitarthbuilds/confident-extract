@@ -367,3 +367,209 @@ def _is_unquoted_key_start(character: str) -> bool:
 
 def _is_unquoted_key_continue(character: str) -> bool:
     return character.isalnum() or character in {"_", "-", "$"}
+
+
+def strip_json_comments(text: str) -> str:
+    """Removes C-style // line comments and /* block comments from JSON-like text.
+
+    Args:
+        text: JSON-like text that may contain JavaScript-style comments.
+
+    Returns:
+        The input with all // and /* ... */ comments removed, leaving string
+        content intact. Returns the input unchanged if no comment markers are present.
+    """
+    if "//" not in text and "/*" not in text:
+        return text
+
+    output: list[str] = []
+    in_string = False
+    escaped = False
+    index = 0
+    length = len(text)
+
+    while index < length:
+        character = text[index]
+
+        if in_string:
+            output.append(character)
+            if escaped:
+                escaped = False
+            elif character == _BACKSLASH:
+                escaped = True
+            elif character == _DOUBLE_QUOTE:
+                in_string = False
+            index += 1
+            continue
+
+        if character == _DOUBLE_QUOTE:
+            in_string = True
+            output.append(character)
+            index += 1
+            continue
+
+        if character == "/" and index + 1 < length:
+            next_character = text[index + 1]
+
+            if next_character == "/":
+                index += 2
+                while index < length and text[index] != "\n":
+                    index += 1
+                continue
+
+            if next_character == "*":
+                index += 2
+                while index < length:
+                    if text[index] == "*" and index + 1 < length and text[index + 1] == "/":
+                        index += 2
+                        break
+                    index += 1
+                continue
+
+        output.append(character)
+        index += 1
+
+    result = "".join(output)
+    return result if result != text else text
+
+
+def fix_python_literals(text: str) -> str:
+    """Replaces Python True, False, and None with JSON-valid true, false, and null.
+
+    Args:
+        text: JSON-like text that may contain Python boolean or None literals.
+
+    Returns:
+        The input with Python literals replaced by their JSON equivalents.
+        String content is left intact. Returns the input unchanged if no
+        Python literals are present outside of strings.
+    """
+    if "True" not in text and "False" not in text and "None" not in text:
+        return text
+
+    output: list[str] = []
+    in_string = False
+    current_quote = ""
+    escaped = False
+    index = 0
+    length = len(text)
+    mutated = False
+
+    while index < length:
+        character = text[index]
+
+        if in_string:
+            output.append(character)
+            if escaped:
+                escaped = False
+            elif character == _BACKSLASH:
+                escaped = True
+            elif character == current_quote:
+                in_string = False
+            index += 1
+            continue
+
+        if character in (_DOUBLE_QUOTE, _SINGLE_QUOTE):
+            in_string = True
+            current_quote = character
+            output.append(character)
+            index += 1
+            continue
+
+        if character == "T" and text[index : index + 4] == "True":
+            tail = index + 4
+            if tail >= length or not (text[tail].isalnum() or text[tail] == "_"):
+                output.append("true")
+                index = tail
+                mutated = True
+                continue
+
+        if character == "F" and text[index : index + 5] == "False":
+            tail = index + 5
+            if tail >= length or not (text[tail].isalnum() or text[tail] == "_"):
+                output.append("false")
+                index = tail
+                mutated = True
+                continue
+
+        if character == "N" and text[index : index + 4] == "None":
+            tail = index + 4
+            if tail >= length or not (text[tail].isalnum() or text[tail] == "_"):
+                output.append("null")
+                index = tail
+                mutated = True
+                continue
+
+        output.append(character)
+        index += 1
+
+    if not mutated:
+        return text
+    return "".join(output)
+
+
+def extract_json_from_prose(text: str) -> str:
+    """Extracts the first balanced JSON object or array from surrounding prose.
+
+    Args:
+        text: Raw text that may contain a JSON payload embedded in prose,
+            instructions, or other non-JSON content.
+
+    Returns:
+        The extracted JSON substring when a balanced object or array is found
+        at or after the first brace or bracket. Returns the input unchanged when
+        no valid JSON container is found or when the input is already bare JSON.
+    """
+    first_brace = text.find(_OBJECT_OPEN)
+    first_bracket = text.find(_ARRAY_OPEN)
+
+    if first_brace == -1 and first_bracket == -1:
+        return text
+
+    if first_brace == -1:
+        start = first_bracket
+        opener, closer = _ARRAY_OPEN, _ARRAY_CLOSE
+    elif first_bracket == -1:
+        start = first_brace
+        opener, closer = _OBJECT_OPEN, _OBJECT_CLOSE
+    elif first_brace <= first_bracket:
+        start = first_brace
+        opener, closer = _OBJECT_OPEN, _OBJECT_CLOSE
+    else:
+        start = first_bracket
+        opener, closer = _ARRAY_OPEN, _ARRAY_CLOSE
+
+    if start == 0 and text.endswith(closer):
+        return text
+
+    depth = 0
+    in_string = False
+    escaped = False
+    index = start
+
+    while index < len(text):
+        character = text[index]
+
+        if in_string:
+            if escaped:
+                escaped = False
+            elif character == _BACKSLASH:
+                escaped = True
+            elif character == _DOUBLE_QUOTE:
+                in_string = False
+            index += 1
+            continue
+
+        if character == _DOUBLE_QUOTE:
+            in_string = True
+        elif character == opener:
+            depth += 1
+        elif character == closer:
+            depth -= 1
+            if depth == 0:
+                candidate = text[start : index + 1]
+                return candidate if candidate != text else text
+
+        index += 1
+
+    return text

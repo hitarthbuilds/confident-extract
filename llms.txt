@@ -1,0 +1,115 @@
+# confident-extract
+
+> Deterministic structured extraction from noisy LLM and OCR output. Zero LLM round-trips. Microsecond latency.
+
+## Summary
+
+`confident-extract` is a Python library that takes raw text from LLM responses or OCR systems and extracts it into strongly typed Python objects. It repairs malformed JSON deterministically — no additional LLM calls, no network, no randomness — and returns a confidence score that tells you exactly how much the input needed to be fixed.
+
+## Install
+
+```
+pip install confident-extract
+pip install "confident-extract[pydantic]"   # adds Pydantic v2 support
+pip install "confident-extract[anthropic]"  # adds Anthropic Message adapter
+pip install "confident-extract[openai]"     # adds OpenAI ChatCompletion adapter
+```
+
+## Core API
+
+```python
+from confident_extract import extract
+
+result = extract(text, MySchema)   # text = raw LLM output
+result.data                        # MySchema instance (validated)
+result.confidence.score            # float 0.0–1.0 (1.0 = no repair needed)
+result.confidence.label            # "high" / "medium" / "low"
+result.repair_applied              # bool
+result.strategy_trace              # tuple of strategy names that fired
+result.latency_ms                  # float
+```
+
+## Schema types supported
+
+- `msgspec.Struct` — fastest, zero-allocation validation
+- `pydantic.BaseModel` — most popular, requires `[pydantic]` extra
+- Python `dataclasses.dataclass` — standard library, no extra needed
+
+## What it repairs
+
+All repairs are deterministic (no LLM involved):
+
+- JSON buried in prose ("Here is the result: {...}")
+- C-style comments (`// line` and `/* block */`)
+- Python literals (`True`, `False`, `None` → `true`, `false`, `null`)
+- Trailing commas (`{"a": 1,}`)
+- Truncated/unterminated containers
+- Single-quoted strings (`{'key': 'value'}`)
+- Bare/unquoted keys (`{id: 1}`)
+- Markdown code fences (` ```json\n{...}\n``` `)
+- Double-escaped JSON strings (`"{\"id\": 1}"`)
+
+## Confidence scoring
+
+```python
+result.confidence.score          # 1.0 = pristine input, lower = more repair
+result.confidence.label          # "high" (≥0.8) / "medium" (≥0.5) / "low" (<0.5)
+result.confidence.repair_penalty # total deduction
+result.strategy_trace            # which strategies fired
+```
+
+## Batch and async
+
+```python
+from confident_extract import extract_batch, extract_async, extract_batch_async
+
+# Sync batch (ThreadPoolExecutor)
+results = extract_batch(list_of_texts, Invoice)
+
+# Async single
+result = await extract_async(text, Invoice)
+
+# Async batch (asyncio + semaphore)
+results = await extract_batch_async(texts, Invoice, max_concurrency=8)
+```
+
+## Confidence-based routing
+
+```python
+from confident_extract import extract_with_routing, RoutingConfig, filter_by_confidence
+
+config = RoutingConfig(min_confidence=0.8, on_low_confidence=my_fallback_fn)
+result = extract_with_routing(text, Invoice, config=config)
+
+confident, uncertain = filter_by_confidence(results, min_score=0.8)
+```
+
+## Custom repair strategies
+
+```python
+from confident_extract import register_strategy
+
+def fix_nan(text: str) -> str:
+    return text.replace(": NaN", ": null")
+
+register_strategy("fix_nan", fix_nan)
+# Now all future extract() calls will try fix_nan after built-in strategies
+```
+
+## Provider adapters
+
+```python
+# Anthropic
+from confident_extract.providers.anthropic import extract_from_response
+result = extract_from_response(anthropic_message, Invoice)
+
+# OpenAI
+from confident_extract.providers.openai import extract_from_response
+result = extract_from_response(openai_completion, Invoice)
+```
+
+## Source
+
+- GitHub: https://github.com/hitarthbuilds/confident-extract
+- PyPI: https://pypi.org/project/confident-extract/
+- Docs: https://hitarthbuilds.github.io/confident-extract/
