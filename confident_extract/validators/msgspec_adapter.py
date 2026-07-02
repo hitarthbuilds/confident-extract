@@ -7,7 +7,7 @@ from typing import TypeVar
 
 import msgspec
 
-T = TypeVar("T", bound=msgspec.Struct)
+T = TypeVar("T")
 
 _MISSING_FIELD_PREFIX = "Object missing required field `"
 _PATH_MARKER = " - at `"
@@ -139,7 +139,7 @@ def _parse_field_path(raw_path: str | None) -> tuple[str, ...]:
     return tuple(parts)
 
 
-def _build_summary(schema: type[msgspec.Struct], error: ValidationError) -> str:
+def _build_summary(schema: type, error: ValidationError) -> str:
     if not error.field_path:
         return f"{schema.__name__} validation failed: {error.message}"
 

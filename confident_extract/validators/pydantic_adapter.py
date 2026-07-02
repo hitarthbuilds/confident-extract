@@ -72,7 +72,7 @@ def validate_with_pydantic(data: object, schema: type[T]) -> T:
         raise TypeError(msg)
 
     try:
-        return schema.model_validate(data)  # type: ignore[return-value]
+        return schema.model_validate(data)
     except _PydanticError as exc:
         errors = [
             PydanticFieldError(

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
-    from anthropic.types import Message
+    from anthropic.types import Message  # type: ignore[import-not-found]
 
 from confident_extract.core.extractor import extract, extract_async
 
@@ -19,7 +19,7 @@ def _get_text(response: Message) -> str:
     """Pulls the first text block from an Anthropic Message."""
     for block in response.content:
         if hasattr(block, "text"):
-            return block.text
+            return block.text  # type: ignore[no-any-return]
     msg = "No text content found in Anthropic Message response."
     raise ValueError(msg)
 

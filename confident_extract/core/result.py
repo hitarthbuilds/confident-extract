@@ -5,12 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-import msgspec
-
 if TYPE_CHECKING:
     from confident_extract.confidence.scorer import ConfidenceScore
 
-T = TypeVar("T", bound=msgspec.Struct)
+T = TypeVar("T")
 
 
 @dataclass(frozen=True, slots=True)

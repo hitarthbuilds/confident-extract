@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from confident_extract.core.extractor import extract
 from confident_extract.core.result import ExtractionResult
 
 T = TypeVar("T")
 
-_FallbackFn = Callable[[ExtractionResult[T]], ExtractionResult[T]]
+_FallbackFn = Callable[[ExtractionResult[Any]], ExtractionResult[Any]]
 
 
 @dataclass

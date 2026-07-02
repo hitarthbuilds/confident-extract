@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
-    from openai.types.chat import ChatCompletion
+    from openai.types.chat import ChatCompletion  # type: ignore[import-not-found]
 
 from confident_extract.core.extractor import extract, extract_async
 
@@ -24,7 +24,7 @@ def _get_text(response: ChatCompletion) -> str:
             "The model may have returned a tool_call instead of plain text."
         )
         raise ValueError(msg)
-    return content
+    return str(content)
 
 
 def extract_from_response(response: ChatCompletion, schema: type[T]) -> ExtractionResult[T]:

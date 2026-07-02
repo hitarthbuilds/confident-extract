@@ -59,13 +59,13 @@ def _run_pipeline(text: str) -> tuple[object, bool, int, str, tuple[str, ...]]:
 def _validate(data: object, schema: type[T]) -> T:
     """Routes validation to the correct adapter based on schema type."""
     if _is_msgspec_struct(schema):
-        return validate_with_msgspec(data, schema)  # type: ignore[arg-type]
+        return validate_with_msgspec(data, schema)
     if is_pydantic_model(schema):
         return validate_with_pydantic(data, schema)
     if _is_dataclass(schema):
         # msgspec.convert supports dataclasses natively
         try:
-            return msgspec.convert(data, type=schema, strict=False)  # type: ignore[type-var]
+            return msgspec.convert(data, type=schema, strict=False)
         except (msgspec.ValidationError, TypeError) as exc:
             msg = f"{schema.__name__} dataclass validation failed: {exc}"
             raise TypeError(msg) from exc
@@ -164,13 +164,16 @@ def extract_list(
         raise TypeError(msg)
 
     if _is_msgspec_struct(schema):
-        validated_list: list[T] = [validate_with_msgspec(item, schema) for item in payload]  # type: ignore[arg-type]
+        validated_list: list[T] = [
+            validate_with_msgspec(item, schema)
+            for item in payload
+        ]
     elif is_pydantic_model(schema):
         validated_list = [validate_with_pydantic(item, schema) for item in payload]
     else:
         try:
             validated_list = [
-                msgspec.convert(item, type=schema, strict=False)  # type: ignore[type-var]
+                msgspec.convert(item, type=schema, strict=False)
                 for item in payload
             ]
         except (msgspec.ValidationError, TypeError) as exc:

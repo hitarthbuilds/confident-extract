@@ -60,7 +60,7 @@ class TestValidateWithPydantic:
 
     def test_non_model_schema_raises_type_error(self) -> None:
         with pytest.raises(TypeError):
-            validate_with_pydantic({}, dict)  # type: ignore[arg-type]
+            validate_with_pydantic({}, dict)  # type: ignore[arg-type,unused-ignore]
 
 
 class TestExtractWithPydanticSchema:
